@@ -9,7 +9,7 @@
 
 from qiskit import QuantumCircuit, transpile
 from qiskit_aer import AerSimulator
-from qiskit.circuit.library import PhaseOracleGate
+from qiskit.circuit.library import PhaseOracleGate, GroverOperator
 
 # Oracle条件を定義（巡回経路が特定条件を満たすビット列に印を付ける）
 oracle_gate = PhaseOracleGate('(x0 & ~x1 & x2)')
@@ -19,6 +19,10 @@ qc = QuantumCircuit(3, 3)
 
 # Oracleゲートを回路に追加（条件に合う経路に位相反転を与える）
 qc.append(oracle_gate, range(3))
+oracle_circuit = QuantumCircuit(3)
+oracle_circuit.append(oracle_gate, range(3))
+grover_op = GroverOperator(oracle_circuit)
+qc.append(grover_op, range(3))
 
 # 測定：量子ビットを古典ビットに写す
 qc.measure(range(3), range(3))
@@ -33,4 +37,4 @@ counts = res.get_counts()
 # 結果表示：特定の巡回経路（ビット列）の出現回数を表示
 print("【TSP量子探索結果】最短ルートに該当するビット列とその出現回数:")
 for bit, count in sorted(counts.items()):
-    print(f"  {bit}: {count}")
+    print(f" {bit}: {count}")
